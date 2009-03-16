@@ -1,10 +1,17 @@
 = Castigate
 
-Do something to each revision of a code repository.
+Castigate collects interesting information about each revision of your
+Git repo and outputs a nice CSV. It can also run an arbitrary shell
+command on each revision.
 
 == Examples
 
-    $ castigate -e 'echo $CASTIGATED' /path/to/git/or/svn/repo
+    $ castigate -r 'find -type f . | wc -l' work/myproj
+
+== Caveats
+
+This does exactly what **I** need it to. It's fragile, crappy, and
+undocumented. Patches are very welcome.
 
 == Installation
 
