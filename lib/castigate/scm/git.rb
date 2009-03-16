@@ -19,17 +19,21 @@ module Castigate
 
       def clean?
         s = grit.status
-        (s.added | s.changed | s.deleted | s.untracked).empty? && @branch
+        (s.added | s.changed | s.deleted).empty? && @branch
+      end
+
+      def commits
+        @commits ||= begin
+          grit.commits(@branch, false).reverse.collect do |gc|
+            commit = Commit.new gc.author.to_s, gc.id,
+              gc.message, gc.date.getutc
+          end
+        end
       end
 
       def each_commit &block
-        commits = grit.commits @branch, false
-
         Dir.chdir @repo.dir do
-          commits.reverse.each do |gc|
-            commit = Commit.new gc.author.to_s, gc.id,
-              gc.message, gc.date.getutc
-
+          commits.each do |commit|
             git "checkout", commit.id
             yield commit
           end

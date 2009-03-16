@@ -21,6 +21,10 @@ OptionParser.new do |opts|
     exit
   end
 
+  opts.on "--verbose", "-v", "Show progress messages." do
+    $verbose = true
+  end
+
   opts.on "--version", "-V", "Show castigate version." do
     puts Castigate::VERSION
     exit
@@ -40,8 +44,19 @@ repo = Castigate::Repo.new dir
 # FIXME: bad exception
 raise "Only run on a clean repo!" unless repo.clean?
 
+
 if command
   repo.each_commit do |commit|
     system "COMMIT=#{commit.id} ; #{command}"
+  end
+else
+  require "fastercsv"
+
+  FCSV do |csv|
+    csv << Castigate::Repo::COLUMNS
+
+    repo.abuse.each do |row|
+      csv << Castigate::Repo::COLUMNS.collect { |c| row[c.to_sym] }
+    end
   end
 end

@@ -13,4 +13,8 @@ Hoe.new "castigate", Castigate::VERSION do |p|
   p.need_tar         = false
   p.test_globs       = %w(test/**/*_test.rb)
   p.testlib          = :minitest
+
+  p.extra_deps << ["fastercsv", "~> 1.0"]
+  p.extra_deps << ["flog", "~> 2.0"]
+  p.extra_deps << ["grit", "~> 1.0"]
 end
