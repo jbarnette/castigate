@@ -1,0 +1,9 @@
+.autotest
+CHANGELOG.rdoc
+Manifest.txt
+README.rdoc
+Rakefile
+bin/castigate
+lib/castigate/cli.rb
+lib/castigate/version.rb
+test/castigate_test.rb

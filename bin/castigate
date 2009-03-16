@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby -w
+
+require "optparse"
+require "castigate/version"
+
+command, repo = nil
+
+OptionParser.new do |opts|
+  opts.banner = "castigate [-e cmd] <repo>"
+  opts.separator ""
+
+  opts.on "--run [command]", "-r", "Run for each revision." do |cmd|
+    command = cmd
+  end
+
+  opts.on "--help", "-h", "-?", "Show this help." do
+    puts opts
+    exit
+  end
+
+  opts.on "--version", "-V", "Show castigate version." do
+    puts Castigate::VERSION
+    exit
+  end
+
+  opts.separator ""
+  opts.parse! ARGV
+
+  unless repo = ARGV.first
+    puts opts
+    exit 1
+  end
+end
+
+unless File.directory? repo
+  puts "ERROR: #{repo} is not a directory."
+  exit 1
+end
+
+if File.directory? File.join(repo, ".git")
+  # FIXME: currently only master
+  revs = `git rev-list --reverse master`
+  puts revs
+  puts "RESULT: #$?"
+elsif File.directory? File.join(repo, ".svn")
+  puts "SUBVERSION"
+else
+  puts "ERROR: #{repo} isn't a Git or Subversion repo."
+end
