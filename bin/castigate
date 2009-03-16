@@ -56,6 +56,7 @@ else
     csv << Castigate::Repo::COLUMNS
 
     repo.abuse.each do |row|
+      row[:commit_time] = row[:commit_time].strftime "%Y-%m-%d %H:%M"
       csv << Castigate::Repo::COLUMNS.collect { |c| row[c.to_sym] }
     end
   end
