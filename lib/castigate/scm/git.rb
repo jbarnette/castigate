@@ -24,7 +24,15 @@ module Castigate
 
       def commits
         @commits ||= begin
-          grit.commits(@branch, false).reverse.collect do |gc|
+          commits, offset = [], 0
+
+          # grit dies a horrible death without pagination
+          until (chunk = grit.commits(@branch, 100, offset)).empty?
+            offset = offset + 100
+            commits.concat chunk
+          end
+
+          commits.reverse.collect do |gc|
             commit = Commit.new gc.author.to_s, gc.id,
               gc.message, gc.date.getutc
           end

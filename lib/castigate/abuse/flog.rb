@@ -23,6 +23,8 @@ module Castigate
         }
       rescue SyntaxError
         nil
+      rescue
+        nil
       end
     end
   end
