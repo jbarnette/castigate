@@ -4,5 +4,8 @@ Manifest.txt
 README.rdoc
 Rakefile
 bin/castigate
+lib/castigate/commit.rb
+lib/castigate/repo.rb
+lib/castigate/scm/git.rb
 lib/castigate/version.rb
 test/castigate_test.rb
