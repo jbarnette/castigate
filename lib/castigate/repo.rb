@@ -1,23 +1,9 @@
-$verbose ||= false
-
 %w(abuse scm).each do |dir|
   Dir[File.dirname(__FILE__) + "/#{dir}/*.rb"].each { |f| require f }
 end
 
 module Castigate
   class Repo
-    ABUSERS = {}
-    COLUMNS = %w(commit_author commit_id commit_time)
-
-    Abuse.constants.each do |c|
-      klass = Abuse.const_get(c)
-      name = klass.name.split("::").last.downcase
-      ABUSERS[name] = klass.new
-      COLUMNS.concat klass.columns.collect { |c| "#{name}_#{c}" }
-    end
-
-    COLUMNS.sort!
-
     attr_reader :dir
 
     def initialize dir
@@ -25,54 +11,45 @@ module Castigate
       @dir = File.expand_path dir
 
       SCM.constants.each do |c|
-        klass = SCM.const_get(c)
-        if klass.respond_to?(:accept?) && klass.accept?(@dir)
-          @scm = klass.new self
+        scm = SCM.const_get(c)
+        if scm.respond_to?(:accept?) && scm.accept?(@dir)
+          extend scm
           break
         end
       end
 
-      # FIXME: bad exception
-      raise "no SCM for #{dir}" unless @scm
+      # FIXME: bad exceptions
+      raise "no SCM for #{dir}" unless respond_to?(:each_commit)
+      setup if respond_to? :setup
     end
 
-    def abuse
-      $stderr.printf "Abusing #{commits.size} commits with " +
-        "#{ABUSERS.keys.join', '}: " if $verbose
+    def abuse dest = nil
+      metrics = Hash.new { |h, k| h[k] = {} }
+      # FIXME: load existing metrics
 
-      results = []
-
-      each_commit do |commit|
-        row = {
-          :commit_author => commit.author,
-          :commit_id     => commit.id,
-          :commit_time   => commit.time,
-        }
-
-        $stderr.printf "." if $verbose
-
-        ABUSERS.each do |name, abuser|
-          result = abuser.abuse commit
-          result.each { |k, v| row[:"#{name}_#{k}"] = v } if result
-        end
-
-        results << row
+      Castigate.verbose do |out|
+        puts "Abusing #@dir with #{Abuse.constants.join(', ')}."
       end
 
-      $stderr.puts if $verbose
-      results
-    end
+      each_commit do |commit|
+        metrics[:commit][commit.id] ||= commit.to_h
 
-    def clean?
-      @scm.clean?
-    end
+        Abuse.constants.each do |c|
+          klass  = Abuse.const_get(c)
+          key    = c.downcase.to_sym
+          abuser = klass.new
 
-    def commits
-      @scm.commits
-    end
+          # FIXME: only if the abuser hasn't seen this commit
+          metrics[key][commit.id] = abuser.abuse(commit)
+        end
 
-    def each_commit &block
-      @scm.each_commit &block
+        Castigate.verbose { |o| o.printf "." }
+      end
+
+      # FIXME: persist
+      Castigate.verbose ""
+
+      metrics
     end
   end
 end

@@ -3,22 +3,22 @@ require "castigate/commit"
 
 module Castigate
   module SCM
-    class Git
+    module Git
       def self.accept? dir
         File.directory? dir + "/.git"
       end
 
-      def initialize repo
-        @repo = repo
-
+      def setup
         @branch = begin
-          head = File.open(@repo.dir + "/.git/HEAD").read.chomp
+          head = File.open(@dir + "/.git/HEAD").read.chomp
           $1 if head =~ %r|ref: refs/heads/(.*)|
         end
+
+        @grit = Grit::Repo.new @dir
       end
 
       def clean?
-        s = grit.status
+        s = @grit.status
         (s.added | s.changed | s.deleted).empty? && @branch
       end
 
@@ -27,7 +27,7 @@ module Castigate
           commits, offset = [], 0
 
           # grit dies a horrible death without pagination
-          until (chunk = grit.commits(@branch, 100, offset)).empty?
+          until (chunk = @grit.commits(@branch, 100, offset)).empty?
             offset = offset + 100
             commits.concat chunk
           end
@@ -40,7 +40,7 @@ module Castigate
       end
 
       def each_commit &block
-        Dir.chdir @repo.dir do
+        Dir.chdir @dir do
           commits.each do |commit|
             git "checkout", commit.id
             yield commit
@@ -58,15 +58,11 @@ module Castigate
         ret = `#{cmd}`
 
         unless $? == 0
-          puts "ERROR: Bad result from [#{cmd}]."
+          puts "ERROR: Bad result from [#{cmd}]: #{ret}"
           exit $?
         end
 
         ret
-      end
-
-      def grit
-        @grit ||= Grit::Repo.new @repo.dir
       end
     end
   end

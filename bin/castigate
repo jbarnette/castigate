@@ -3,6 +3,7 @@
 require "rubygems"
 
 require "optparse"
+require "castigate"
 require "castigate/repo"
 require "castigate/version"
 
@@ -22,7 +23,7 @@ OptionParser.new do |opts|
   end
 
   opts.on "--verbose", "-v", "Show progress messages." do
-    $verbose = true
+    Castigate.verbose = true
   end
 
   opts.on "--version", "-V", "Show castigate version." do
@@ -50,14 +51,6 @@ if command
     system "COMMIT=#{commit.id} ; #{command}"
   end
 else
-  require "fastercsv"
-
-  FCSV do |csv|
-    csv << Castigate::Repo::COLUMNS
-
-    repo.abuse.each do |row|
-      row[:commit_time] = row[:commit_time].strftime "%Y-%m-%d %H:%M"
-      csv << Castigate::Repo::COLUMNS.collect { |c| row[c.to_sym] }
-    end
-  end
+  require "pp"
+  pp repo.abuse
 end
