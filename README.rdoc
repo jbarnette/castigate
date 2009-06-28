@@ -1,5 +1,9 @@
 = Castigate
 
+* http://github.com/jbarnette/castigate
+
+== Description
+
 Castigate collects interesting information about each revision of your
 Git repo and dumps out CSV. It can also run an arbitrary shell command
 on each revision.
@@ -12,12 +16,11 @@ on each revision.
 == Caveats
 
 This does exactly what **I** need it to. It's fragile, disorganized,
-unfinished, undocumented, and probably dangerous. Patches are very
-welcome.
+unfinished, undocumented, untested, and probably dangerous.
 
 == Installation
 
-    # FIXME
+    # FIX
     $ sudo gem install castigate
 
 == License

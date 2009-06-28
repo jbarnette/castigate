@@ -1,20 +1,15 @@
 require "rubygems"
 require "hoe"
 
-require "./lib/castigate/version.rb"
+Hoe.spec "castigate" do
+  developer "John Barnette", "jbarnette@rubyforge.org"
 
-Hoe.new "castigate", Castigate::VERSION do |p|
-  p.developer "John Barnette", "jbarnette@rubyforge.org"
+  self.extra_rdoc_files = FileList["*.rdoc"]
+  self.history_file     = "CHANGELOG.rdoc"
+  self.readme_file      = "README.rdoc"
+  self.testlib          = :minitest
 
-  p.url              = "http://github.com/jbarnette/castigate"
-  p.history_file     = "CHANGELOG.rdoc"
-  p.readme_file      = "README.rdoc"
-  p.extra_rdoc_files = [p.readme_file]
-  p.need_tar         = false
-  p.test_globs       = %w(test/**/*_test.rb)
-  p.testlib          = :minitest
-
-  p.extra_deps << ["fastercsv", "~> 1.0"]
-  p.extra_deps << ["flog", "~> 2.0"]
-  p.extra_deps << ["grit", "~> 1.0"]
+  extra_deps << ["fastercsv", "~> 1.0"]
+  extra_deps << ["flog", "~> 2.0"]
+  extra_deps << ["grit", "~> 1.0"]
 end

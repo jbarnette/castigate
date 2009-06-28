@@ -1,4 +1,6 @@
 module Castigate
+  VERSION = "1.0.0"
+
   @@verbose = false
 
   def self.verbose= flag

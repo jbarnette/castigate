@@ -1,6 +1,6 @@
-require "minitest/unit"
+require "minitest/autorun"
 
-class CastigateTest < MiniTest::Unit::TestCase
+class TestCastigate < MiniTest::Unit::TestCase
   def test_sanity
     flunk "write tests or I will kneecap you"
   end
