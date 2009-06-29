@@ -5,7 +5,6 @@ require "rubygems"
 require "optparse"
 require "castigate"
 require "castigate/repo"
-require "castigate/version"
 
 command, dir = nil
 
@@ -23,7 +22,7 @@ OptionParser.new do |opts|
   end
 
   opts.on "--verbose", "-v", "Show progress messages." do
-    Castigate.verbose = true
+    $DEBUG = true
   end
 
   opts.on "--version", "-V", "Show castigate version." do
@@ -44,7 +43,6 @@ repo = Castigate::Repo.new dir
 
 # FIXME: bad exception
 raise "Only run on a clean repo!" unless repo.clean?
-
 
 if command
   repo.each_commit do |commit|

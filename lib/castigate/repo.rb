@@ -27,9 +27,7 @@ module Castigate
       metrics = Hash.new { |h, k| h[k] = {} }
       # FIXME: load existing metrics
 
-      Castigate.verbose do |out|
-        puts "Abusing #@dir with #{Abuse.constants.join(', ')}."
-      end
+      warn "Abusing #@dir with #{Abuse.constants.join(', ')}." if $DEBUG
 
       each_commit do |commit|
         metrics[:commit][commit.id] ||= commit.to_h
@@ -43,12 +41,10 @@ module Castigate
           metrics[key][commit.id] = abuser.abuse(commit)
         end
 
-        Castigate.verbose { |o| o.printf "." }
+        $stderr.printf "." if $DEBUG
       end
 
-      # FIXME: persist
-      Castigate.verbose ""
-
+      warn "" if $DEBUG
       metrics
     end
   end

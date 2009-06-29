@@ -9,7 +9,7 @@ Hoe.spec "castigate" do
   self.readme_file      = "README.rdoc"
   self.testlib          = :minitest
 
-  extra_deps << ["fastercsv", "~> 1.0"]
-  extra_deps << ["flog", "~> 2.0"]
   extra_deps << ["grit", "~> 1.0"]
+
+  pluggable!
 end
