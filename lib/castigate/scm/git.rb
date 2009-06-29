@@ -41,14 +41,16 @@ module Castigate
 
       def each_commit &block
         Dir.chdir @dir do
-          commits.each do |commit|
-            git "checkout", commit.id
-            yield commit
+          begin
+            commits.each do |commit|
+              git "checkout", commit.id
+              yield commit
+            end
+          ensure
+            git "clean", "-df"
+            git "reset", "--hard"
+            git "checkout", @branch
           end
-
-          git "clean", "-df"
-          git "reset", "--hard"
-          git "checkout", @branch
         end
       end
 

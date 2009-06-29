@@ -1,7 +1,3 @@
-%w(abuse scm).each do |dir|
-  Dir[File.dirname(__FILE__) + "/#{dir}/*.rb"].each { |f| require f }
-end
-
 module Castigate
   class Repo
     attr_reader :dir
@@ -12,6 +8,7 @@ module Castigate
 
       SCM.constants.each do |c|
         scm = SCM.const_get(c)
+
         if scm.respond_to?(:accept?) && scm.accept?(@dir)
           extend scm
           break
