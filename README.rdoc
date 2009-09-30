@@ -5,8 +5,8 @@
 == Description
 
 Castigate collects interesting information about each revision of your
-Git repo and dumps out CSV. It can also run an arbitrary shell command
-on each revision.
+Git repo and dumps out the information. It can also run an arbitrary
+shell command on each revision.
 
 == Examples
 
