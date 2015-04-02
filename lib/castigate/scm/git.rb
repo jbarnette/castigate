@@ -49,11 +49,17 @@ module Castigate
         end
       end
 
+      def checkout commit
+        return if commit.id == @current
+        warn commit.time
+        git "checkout", commit.id
+        @current = commit.id
+      end
+
       def each_commit &block
         Dir.chdir @dir do
           begin
             commits.each do |commit|
-              git "checkout", commit.id
               yield commit
             end
           ensure
