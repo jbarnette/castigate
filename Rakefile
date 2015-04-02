@@ -9,7 +9,5 @@ Hoe.spec "castigate" do
   self.readme_file      = "README.rdoc"
   self.testlib          = :minitest
 
-  extra_deps << ["grit", "~> 1.0"]
-
   pluggable!
 end

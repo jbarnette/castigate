@@ -15,4 +15,7 @@ module Castigate
 end
 
 # load plugins
-Gem.find_files("castigate/{abuse,scm}/*.rb").each { |f| require f }
+unless defined?(LOADED_CASTIGATE_PLUGINS) then
+  LOADED_CASTIGATE_PLUGINS = true
+  Gem.find_files("castigate/{abuse,scm}/*.rb").each { |f| require f }
+end
