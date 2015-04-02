@@ -1,9 +1,25 @@
-require "grit"
 require "castigate/commit"
 
 module Castigate
   module SCM
     module Git
+      class Repo
+        attr_accessor :dir
+        def initialize dir
+          self.dir = dir
+        end
+
+        def clean?
+          `git status --all`.include? "nothing to commit, working directory clean"
+        end
+
+        def commits(*)
+          Dir.chdir dir do
+            `git log --pretty=format:"%h|%an|%ai|%s"`.lines.map { |l| l.chomp.split(/\|/, 4) }
+          end
+        end
+      end
+
       def self.accept? dir
         File.directory? dir + "/.git"
       end
@@ -14,27 +30,21 @@ module Castigate
           $1 if head =~ %r|ref: refs/heads/(.*)|
         end
 
-        @grit = Grit::Repo.new @dir
+        @repo = Repo.new @dir
+        @current = nil
       end
 
       def clean?
-        s = @grit.status
-        (s.added | s.changed | s.deleted).empty? && @branch
+         @repo.clean? && @branch
       end
 
       def commits
         @commits ||= begin
-          commits, offset = [], 0
-
-          # grit dies a horrible death without pagination
-          until (chunk = @grit.commits(@branch, 100, offset)).empty?
-            offset = offset + 100
-            commits.concat chunk
-          end
+          commits = @repo.commits
 
           commits.reverse.collect do |gc|
-            commit = Commit.new gc.author.to_s, gc.id,
-              gc.message, gc.date.getutc
+            id, author, date, title = gc
+            Commit.new author, id, title, date
           end
         end
       end
