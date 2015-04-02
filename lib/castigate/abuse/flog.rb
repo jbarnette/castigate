@@ -9,21 +9,17 @@ module Castigate
 
       def abuse commit
         files   = Dir["{app,bin,lib,spec,test}/**/*.rb"]
-        flogger = ::Flog.new
+        flogger = ::Flog.new :continue => true
 
-        flogger.flog files
+        flogger.flog(*files)
         methods = flogger.totals.reject { |k,v| k =~ /\#none$/ }
 
         {
           :average => flogger.average,
           :max     => methods.values.max,
           :size    => methods.size,
-          :total   => flogger.total
+          :total   => flogger.total_score
         }
-      rescue SyntaxError
-        nil
-      rescue
-        nil
       end
     end
   end
