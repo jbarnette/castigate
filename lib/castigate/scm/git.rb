@@ -71,7 +71,7 @@ module Castigate
 
         unless $? == 0
           puts "ERROR: Bad result from [#{cmd}]: #{ret}"
-          exit $?
+          exit 1
         end
 
         ret
